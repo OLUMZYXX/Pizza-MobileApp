@@ -9,4 +9,7 @@ config.resolver.alias = {
   '@': path.resolve(__dirname, '.'),
 }
 
+// Ensure reanimated is properly handled
+config.resolver.platforms = ['ios', 'android', 'native', 'web']
+
 module.exports = withNativeWind(config, { input: './global.css' })

@@ -1,6 +1,7 @@
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
 import { useEffect } from 'react'
+import 'react-native-reanimated'
 import '../global.css'
 
 export default function RootLayout() {
@@ -18,6 +19,10 @@ export default function RootLayout() {
       SplashScreen.hideAsync()
     }
   }, [fontsLoaded, fontError])
+
+  if (!fontsLoaded && !fontError) {
+    return null
+  }
 
   return <Stack screenOptions={{ headerShown: false }} />
 }
