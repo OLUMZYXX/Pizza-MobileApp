@@ -7,13 +7,13 @@ import {
   Pressable,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import CartButton from '../../components/CartButton'
 import '../../global.css'
+import SearchBar from './search'
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('All')
@@ -82,19 +82,11 @@ export default function Home() {
       </View>
 
       {/* Search Bar */}
-      <View className='searchbar p-4 mb-6'>
-        <Image
-          source={images.search}
-          className='size-5'
-          resizeMode='contain'
-          tintColor='#999'
-        />
-        <TextInput
+      <View className='mb-6'>
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
           placeholder='Search for food, drinks...'
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          className='flex-1 text-base font-quicksand-medium text-dark-100'
-          placeholderTextColor='#999'
         />
       </View>
 
