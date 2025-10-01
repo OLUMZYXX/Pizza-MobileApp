@@ -36,6 +36,7 @@ import onionRings from '@/assets/images/onion-rings.png'
 import onions from '@/assets/images/onions.png'
 import pizzaOne from '@/assets/images/pizza-one.png'
 import salad from '@/assets/images/salad.png'
+import signup from '@/assets/images/signup.png'
 import success from '@/assets/images/success.png'
 import tomatoes from '@/assets/images/tomatoes.png'
 import arrowBack from '../assets/icons/arrow-back.png'
@@ -176,6 +177,7 @@ export const images = {
   onions,
   pizzaOne,
   salad,
+  signup,
   success,
   tomatoes,
   arrowBack,

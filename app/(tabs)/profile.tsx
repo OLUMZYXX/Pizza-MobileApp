@@ -13,7 +13,7 @@ export default function Profile() {
   ]
 
   return (
-    <SafeAreaView className='flex-1 bg-gray-50'>
+    <SafeAreaView className='flex-1'>
       <View className='px-5 pt-5'>
         {/* Profile Header */}
         <View className='items-center mb-8'>

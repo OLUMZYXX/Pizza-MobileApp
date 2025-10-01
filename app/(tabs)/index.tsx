@@ -12,8 +12,8 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import CartButton from '../../components/CartButton'
+import SearchBar from '../../components/SearchBar'
 import '../../global.css'
-import SearchBar from './search'
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('All')
@@ -68,7 +68,9 @@ export default function Home() {
             />
           </TouchableOpacity>
         </View>
-        <CartButton />
+        <View className='flex-row gap-2'>
+          <CartButton />
+        </View>
       </View>
 
       {/* Greeting */}
@@ -131,7 +133,7 @@ export default function Home() {
   )
 
   return (
-    <SafeAreaView className='flex-1 bg-gray-50'>
+    <SafeAreaView className='flex-1'>
       <FlatList
         data={offers}
         keyboardShouldPersistTaps='handled'

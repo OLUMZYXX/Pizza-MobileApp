@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Cart() {
   return (
-    <SafeAreaView className='flex-1 bg-white'>
+    <SafeAreaView className='flex-1'>
       <View className='flex-1 justify-center items-center px-5'>
         <Image
           source={images.emptyState}
