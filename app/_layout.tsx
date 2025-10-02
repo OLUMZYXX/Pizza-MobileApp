@@ -2,6 +2,8 @@ import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
 import { useEffect } from 'react'
 import 'react-native-reanimated'
+import { AuthProvider } from '../contexts/AuthContext'
+import { CartProvider } from '../contexts/CartContext'
 import '../global.css'
 
 export default function RootLayout() {
@@ -24,5 +26,11 @@ export default function RootLayout() {
     return null
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />
+  return (
+    <CartProvider>
+      <AuthProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+      </AuthProvider>
+    </CartProvider>
+  )
 }

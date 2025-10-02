@@ -1,10 +1,12 @@
 import CustomButton from '@/components/CustomButton'
 import CustomInput from '@/components/CustomInput'
+import { useAuth } from '@/contexts/AuthContext'
 import { router } from 'expo-router'
 import React, { useState } from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Text, TouchableOpacity, View } from 'react-native'
 
 const SignIn = () => {
+  const { signIn } = useAuth()
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -12,13 +14,23 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSignIn = async () => {
+    if (!form.email || !form.password) {
+      Alert.alert('Error', 'Please fill in all fields')
+      return
+    }
+
     setIsLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      // Navigate to main app after sign in
+    try {
+      await signIn(form.email, form.password)
       router.replace('/(tabs)')
-    }, 1500)
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        error instanceof Error ? error.message : 'Sign in failed'
+      )
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleSignUp = () => {

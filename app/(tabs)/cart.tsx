@@ -1,23 +1,214 @@
 import { images } from '@/constants'
-import React from 'react'
-import { Image, Text, View } from 'react-native'
+import { useCart } from '@/contexts/CartContext'
+import React, { useEffect } from 'react'
+import {
+  Alert,
+  FlatList,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Cart() {
-  return (
-    <SafeAreaView className='flex-1'>
-      <View className='flex-1 justify-center items-center px-5'>
+  const {
+    cartItems,
+    updateQuantity,
+    removeFromCart,
+    getTotalPrice,
+    isLoading,
+  } = useCart()
+
+  useEffect(() => {
+    console.log('Cart items updated:', cartItems)
+  }, [cartItems])
+
+  console.log('Cart page rendered with cartItems:', cartItems)
+
+  const handleQuantityChange = (id: string, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      Alert.alert(
+        'Remove Item',
+        'Are you sure you want to remove this item from your cart?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Remove', onPress: () => removeFromCart(id) },
+        ]
+      )
+    } else {
+      updateQuantity(id, newQuantity)
+    }
+  }
+
+  const handleRemoveItem = (id: string) => {
+    Alert.alert(
+      'Remove Item',
+      'Are you sure you want to remove this item from your cart?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Remove', onPress: () => removeFromCart(id) },
+      ]
+    )
+  }
+
+  const renderCartItem = ({ item }: { item: any }) => (
+    <View className='bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray-100'>
+      {/* Item Header */}
+      <View className='flex-row items-center mb-3'>
         <Image
-          source={images.emptyState}
-          className='size-48 mb-8'
-          resizeMode='contain'
+          source={item.item.image}
+          className='size-16 rounded-xl mr-3'
+          resizeMode='cover'
         />
-        <Text className='h3-bold text-dark-100 mb-4 text-center'>
-          Your cart is empty
+        <View className='flex-1'>
+          <Text className='text-lg font-quicksand-bold text-dark-100 mb-1'>
+            {item.item.title}
+          </Text>
+          <Text className='text-sm text-gray-500'>
+            ${item.item.price.toFixed(2)} each
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => handleRemoveItem(item.id)}
+          className='p-2'
+        >
+          <Image source={images.trash} className='size-5' tintColor='#EF4444' />
+        </TouchableOpacity>
+      </View>
+
+      {/* Customizations */}
+      {(item.selectedToppings.length > 0 || item.selectedSides.length > 0) && (
+        <View className='mb-3'>
+          {item.selectedToppings.length > 0 && (
+            <View className='mb-2'>
+              <Text className='text-sm font-quicksand-semibold text-gray-700 mb-1'>
+                Toppings:
+              </Text>
+              <Text className='text-sm text-gray-600'>
+                {item.selectedToppings.join(', ')}
+              </Text>
+            </View>
+          )}
+          {item.selectedSides.length > 0 && (
+            <View>
+              <Text className='text-sm font-quicksand-semibold text-gray-700 mb-1'>
+                Sides:
+              </Text>
+              <Text className='text-sm text-gray-600'>
+                {item.selectedSides.join(', ')}
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* Quantity and Price */}
+      <View className='flex-row items-center justify-between'>
+        <View className='flex-row items-center'>
+          <TouchableOpacity
+            onPress={() => handleQuantityChange(item.id, item.quantity - 1)}
+            className='bg-gray-100 rounded-full p-2 mr-3'
+          >
+            <Image
+              source={images.minus}
+              className='size-4'
+              tintColor='#374151'
+            />
+          </TouchableOpacity>
+          <Text className='text-lg font-quicksand-bold text-dark-100 mx-3'>
+            {item.quantity}
+          </Text>
+          <TouchableOpacity
+            onPress={() => handleQuantityChange(item.id, item.quantity + 1)}
+            className='bg-primary rounded-full p-2 ml-3'
+          >
+            <Image
+              source={images.plus}
+              className='size-4'
+              tintColor='#FFFFFF'
+            />
+          </TouchableOpacity>
+        </View>
+        <Text className='text-lg font-quicksand-bold text-primary'>
+          ${(item.totalPrice * item.quantity).toFixed(2)}
         </Text>
-        <Text className='paragraph-medium text-gray-500 text-center'>
-          Add some delicious items to your cart to get started!
+      </View>
+    </View>
+  )
+
+  if (isLoading) {
+    return (
+      <SafeAreaView className='flex-1 bg-gray-50'>
+        <View className='flex-1 justify-center items-center'>
+          <Text className='text-lg text-gray-500'>Loading your cart...</Text>
+        </View>
+      </SafeAreaView>
+    )
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <SafeAreaView className='flex-1'>
+        <View className='flex-1 justify-center items-center px-5'>
+          <Image
+            source={images.emptyState}
+            className='size-48 mb-8'
+            resizeMode='contain'
+          />
+          <Text className='h3-bold text-dark-100 mb-4 text-center'>
+            Your cart is empty
+          </Text>
+          <Text className='paragraph-medium text-gray-500 text-center'>
+            Add some delicious items to your cart to get started!
+          </Text>
+        </View>
+      </SafeAreaView>
+    )
+  }
+
+  return (
+    <SafeAreaView className='flex-1 bg-gray-50'>
+      {/* Header */}
+      <View className='bg-white px-5 py-4 border-b border-gray-200'>
+        <Text className='text-2xl font-quicksand-bold text-dark-100'>
+          Your Cart
         </Text>
+        <Text className='text-sm text-gray-500 mt-1'>
+          {cartItems.length} item{cartItems.length !== 1 ? 's' : ''} in your
+          cart
+        </Text>
+      </View>
+
+      {/* Cart Items */}
+      <FlatList
+        data={cartItems}
+        renderItem={renderCartItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ padding: 20 }}
+        showsVerticalScrollIndicator={false}
+      />
+
+      {/* Checkout Section */}
+      <View className='bg-white p-5 border-t border-gray-200'>
+        <View className='flex-row justify-between items-center mb-4'>
+          <Text className='text-lg font-quicksand-bold text-dark-100'>
+            Total
+          </Text>
+          <Text className='text-2xl font-quicksand-bold text-primary'>
+            ${getTotalPrice().toFixed(2)}
+          </Text>
+        </View>
+        <TouchableOpacity
+          className='bg-primary py-4 rounded-full items-center'
+          onPress={() =>
+            Alert.alert('Checkout', 'Checkout functionality coming soon!')
+          }
+        >
+          <Text className='text-white font-quicksand-bold text-lg'>
+            Proceed to Checkout
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   )

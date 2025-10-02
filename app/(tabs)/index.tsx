@@ -1,24 +1,29 @@
-import { CATEGORIES, images, offers } from '@/constants'
+import { images, offers } from '@/constants'
+import { useAuth } from '@/contexts/AuthContext'
+import { useCart } from '@/contexts/CartContext'
 import cn from 'clsx'
 import React, { Fragment, useEffect, useState } from 'react'
 import {
   FlatList,
   Image,
   Pressable,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import CartButton from '../../components/CartButton'
-import SearchBar from '../../components/SearchBar'
+import { ItemDetailModal } from '../../components/ItemDetailModal'
 import '../../global.css'
 
 export default function Home() {
-  const [selectedCategory, setSelectedCategory] = useState('All')
-  const [searchQuery, setSearchQuery] = useState('')
+  const { user } = useAuth()
+  const { addToCart } = useCart()
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [selectedItem, setSelectedItem] = useState<
+    (typeof offers)[number] | null
+  >(null)
+  const [modalVisible, setModalVisible] = useState(false)
 
   // Function to get greeting based on time
   const getGreeting = () => {
@@ -46,6 +51,26 @@ export default function Home() {
 
   const greeting = getGreeting()
 
+  const handleOrderNow = (item: (typeof offers)[number]) => {
+    setSelectedItem(item)
+    setModalVisible(true)
+  }
+
+  const handleAddToCart = (
+    item: (typeof offers)[number],
+    selectedToppings: string[],
+    selectedSides: string[]
+  ) => {
+    addToCart(item, selectedToppings, selectedSides)
+    setModalVisible(false)
+    setSelectedItem(null)
+  }
+
+  const handleCloseModal = () => {
+    setModalVisible(false)
+    setSelectedItem(null)
+  }
+
   const Header = () => (
     <View className='px-5 pt-2'>
       {/* Top Header */}
@@ -60,6 +85,11 @@ export default function Home() {
               tintColor='#FF6B35'
             />
             <Text className='text-dark-100 paragraph-bold'>Nigeria</Text>
+            {user && (
+              <Text className='text-primary paragraph-medium'>
+                , {user.fullName}
+              </Text>
+            )}
             <Image
               source={images.arrowDown}
               className='size-3'
@@ -82,45 +112,6 @@ export default function Home() {
           What would you like to eat today?
         </Text>
       </View>
-
-      {/* Search Bar */}
-      <View className='mb-6'>
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          placeholder='Search for food, drinks...'
-        />
-      </View>
-
-      {/* Categories */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        className='mb-8'
-        contentContainerStyle={{ paddingRight: 20 }}
-      >
-        {CATEGORIES.map((category) => (
-          <TouchableOpacity
-            key={category.id}
-            onPress={() => setSelectedCategory(category.name)}
-            className={cn(
-              'filter mr-3 mb-2',
-              selectedCategory === category.name ? 'bg-primary' : 'bg-gray-50'
-            )}
-          >
-            <Text
-              className={cn(
-                'paragraph-semibold',
-                selectedCategory === category.name
-                  ? 'text-white'
-                  : 'text-gray-600'
-              )}
-            >
-              {category.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
 
       {/* Special Offers Title */}
       <View className='flex-between flex-row mb-4'>
@@ -213,6 +204,7 @@ export default function Home() {
                             <TouchableOpacity
                               className='bg-white/20 backdrop-blur-sm flex-row items-center px-4 py-3 rounded-full border border-white/30'
                               activeOpacity={0.8}
+                              onPress={() => handleOrderNow(item)}
                             >
                               <Text className='text-white font-semibold text-sm mr-2'>
                                 Order Now
@@ -256,6 +248,7 @@ export default function Home() {
                             <TouchableOpacity
                               className='bg-white/20 backdrop-blur-sm flex-row items-center px-4 py-3 rounded-full border border-white/30'
                               activeOpacity={0.8}
+                              onPress={() => handleOrderNow(item)}
                             >
                               <Text className='text-white font-semibold text-sm mr-2'>
                                 Order Now
@@ -295,6 +288,12 @@ export default function Home() {
         ListHeaderComponent={Header}
         contentContainerClassName='pb-28'
         showsVerticalScrollIndicator={false}
+      />
+      <ItemDetailModal
+        visible={modalVisible}
+        item={selectedItem}
+        onClose={handleCloseModal}
+        onAddToCart={handleAddToCart}
       />
     </SafeAreaView>
   )
