@@ -2,16 +2,25 @@ import CustomButton from '@/components/CustomButton'
 import CustomInput from '@/components/CustomInput'
 import { useAuth } from '@/contexts/AuthContext'
 import { router } from 'expo-router'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert, Text, TouchableOpacity, View } from 'react-native'
 
 const SignIn = () => {
-  const { signIn } = useAuth()
+  const { signIn, biometricSignIn, isBiometricAvailable } = useAuth()
   const [form, setForm] = useState({
     email: '',
     password: '',
   })
   const [isLoading, setIsLoading] = useState(false)
+  const [biometricSupported, setBiometricSupported] = useState(false)
+
+  useEffect(() => {
+    const checkBiometricSupport = async () => {
+      const supported = await isBiometricAvailable()
+      setBiometricSupported(supported)
+    }
+    checkBiometricSupport()
+  }, [isBiometricAvailable])
 
   const handleSignIn = async () => {
     if (!form.email || !form.password) {
@@ -35,6 +44,18 @@ const SignIn = () => {
 
   const handleSignUp = () => {
     router.push('/(auth)/sign-up')
+  }
+
+  const handleBiometricSignIn = async () => {
+    try {
+      await biometricSignIn()
+      router.replace('/(tabs)')
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        error instanceof Error ? error.message : 'Biometric sign in failed'
+      )
+    }
   }
 
   return (
@@ -90,6 +111,26 @@ const SignIn = () => {
             isLoading={isLoading}
             buttonStyle='mb-4'
           />
+
+          {/* Biometric Sign In */}
+          {biometricSupported && (
+            <>
+              <View className='flex-row items-center mb-4'>
+                <View className='flex-1 h-px bg-gray-300' />
+                <Text className='mx-4 text-gray-500 font-quicksand-medium'>
+                  or
+                </Text>
+                <View className='flex-1 h-px bg-gray-300' />
+              </View>
+              <CustomButton
+                title='Sign In with Biometrics'
+                onPress={handleBiometricSignIn}
+                isLoading={false}
+                variant='secondary'
+                buttonStyle='mb-4'
+              />
+            </>
+          )}
 
           {/* Sign Up Link */}
           <View className='flex-row justify-center items-center mt-auto'>

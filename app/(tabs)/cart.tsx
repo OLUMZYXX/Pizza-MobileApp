@@ -53,7 +53,7 @@ export default function Cart() {
   }
 
   const renderCartItem = ({ item }: { item: any }) => (
-    <View className='bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray-100'>
+    <View className='bg-white rounded-2xl p-4 mb-4 shadow-sm'>
       {/* Item Header */}
       <View className='flex-row items-center mb-3'>
         <Image
@@ -108,26 +108,18 @@ export default function Cart() {
         <View className='flex-row items-center'>
           <TouchableOpacity
             onPress={() => handleQuantityChange(item.id, item.quantity - 1)}
-            className='bg-gray-100 rounded-full p-2 mr-3'
+            className='bg-primary rounded-full w-8 h-8 items-center justify-center mr-3'
           >
-            <Image
-              source={images.minus}
-              className='size-4'
-              tintColor='#374151'
-            />
+            <Text className='text-lg font-quicksand-bold text-white'>-</Text>
           </TouchableOpacity>
           <Text className='text-lg font-quicksand-bold text-dark-100 mx-3'>
             {item.quantity}
           </Text>
           <TouchableOpacity
             onPress={() => handleQuantityChange(item.id, item.quantity + 1)}
-            className='bg-primary rounded-full p-2 ml-3'
+            className='bg-primary rounded-full w-8 h-8 items-center justify-center ml-3'
           >
-            <Image
-              source={images.plus}
-              className='size-4'
-              tintColor='#FFFFFF'
-            />
+            <Text className='text-lg font-quicksand-bold text-white'>+</Text>
           </TouchableOpacity>
         </View>
         <Text className='text-lg font-quicksand-bold text-primary'>
@@ -170,7 +162,7 @@ export default function Cart() {
   return (
     <SafeAreaView className='flex-1 bg-gray-50'>
       {/* Header */}
-      <View className='bg-white px-5 py-4 border-b border-gray-200'>
+      <View className='bg-white px-5 py-4'>
         <Text className='text-2xl font-quicksand-bold text-dark-100'>
           Your Cart
         </Text>
@@ -190,7 +182,7 @@ export default function Cart() {
       />
 
       {/* Checkout Section */}
-      <View className='bg-white p-5 border-t border-gray-200'>
+      <View className='bg-white p-5'>
         <View className='flex-row justify-between items-center mb-4'>
           <Text className='text-lg font-quicksand-bold text-dark-100'>
             Total

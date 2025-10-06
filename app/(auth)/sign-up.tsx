@@ -9,6 +9,7 @@ const SignUp = () => {
   const { signUp } = useAuth()
   const [form, setForm] = useState({
     fullName: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -18,6 +19,7 @@ const SignUp = () => {
   const handleSignUp = async () => {
     if (
       !form.fullName ||
+      !form.username ||
       !form.email ||
       !form.password ||
       !form.confirmPassword
@@ -33,7 +35,7 @@ const SignUp = () => {
 
     setIsLoading(true)
     try {
-      await signUp(form.fullName, form.email, form.password)
+      await signUp(form.fullName, form.username, form.email, form.password)
       router.replace('/(tabs)')
     } catch (error) {
       Alert.alert(
@@ -74,6 +76,15 @@ const SignUp = () => {
               placeholder='Enter your full name'
               value={form.fullName}
               onChangeText={(text) => setForm({ ...form, fullName: text })}
+            />
+          </View>
+
+          <View className='mb-3'>
+            <CustomInput
+              label='Username'
+              placeholder='Choose a username'
+              value={form.username}
+              onChangeText={(text) => setForm({ ...form, username: text })}
             />
           </View>
 

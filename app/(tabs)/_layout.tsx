@@ -99,6 +99,7 @@ export default function TabsLayout() {
               resizeMode='contain'
             />
           ),
+          href: '/profile',
         }}
       />
     </Tabs>

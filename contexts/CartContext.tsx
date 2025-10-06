@@ -125,7 +125,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             totalPrice,
           },
         ]
+      }
       console.log('Added to cart, new cart items:', newCartItems)
+      return newCartItems
     })
   }
 

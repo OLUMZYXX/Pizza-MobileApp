@@ -6,6 +6,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import {
   FlatList,
   Image,
+  Modal,
   Pressable,
   Text,
   TouchableOpacity,
@@ -17,13 +18,22 @@ import { ItemDetailModal } from '../../components/ItemDetailModal'
 import '../../global.css'
 
 export default function Home() {
-  const { user } = useAuth()
+  const { user, updateLocation } = useAuth()
+  const [location, setLocation] = useState(user?.location || 'Nigeria')
+  const [locationModalVisible, setLocationModalVisible] = useState(false)
   const { addToCart } = useCart()
   const [currentTime, setCurrentTime] = useState(new Date())
   const [selectedItem, setSelectedItem] = useState<
     (typeof offers)[number] | null
   >(null)
   const [modalVisible, setModalVisible] = useState(false)
+
+  // Sync location from user data
+  useEffect(() => {
+    if (user?.location) {
+      setLocation(user.location)
+    }
+  }, [user?.location])
 
   // Function to get greeting based on time
   const getGreeting = () => {
@@ -71,32 +81,50 @@ export default function Home() {
     setSelectedItem(null)
   }
 
+  const locations = [
+    'Nigeria',
+    'Ghana',
+    'Kenya',
+    'South Africa',
+    'USA',
+    'UK',
+    'Canada',
+    'Australia',
+    'India',
+    'Brazil',
+  ]
+
   const Header = () => (
     <View className='px-5 pt-2'>
       {/* Top Header */}
       <View className='flex-between flex-row w-full mb-6'>
         <View className='flex-start'>
           <Text className='small-bold text-gray-400 mb-1'>DELIVER TO</Text>
-          <TouchableOpacity className='flex-row items-center gap-x-2'>
-            <Image
-              source={images.location}
-              className='size-4'
-              resizeMode='contain'
-              tintColor='#FF6B35'
-            />
-            <Text className='text-dark-100 paragraph-bold'>Nigeria</Text>
+          <View className='flex-row items-center gap-x-2'>
+            <TouchableOpacity
+              className='flex-row items-center gap-x-2'
+              onPress={() => setLocationModalVisible(true)}
+            >
+              <Image
+                source={images.location}
+                className='size-4'
+                resizeMode='contain'
+                tintColor='#FF6B35'
+              />
+              <Text className='text-dark-100 paragraph-bold'>{location}</Text>
+              <Image
+                source={images.arrowDown}
+                className='size-3'
+                resizeMode='contain'
+                tintColor='#666'
+              />
+            </TouchableOpacity>
             {user && (
               <Text className='text-primary paragraph-medium'>
-                , {user.fullName}
+                , {user.username}
               </Text>
             )}
-            <Image
-              source={images.arrowDown}
-              className='size-3'
-              resizeMode='contain'
-              tintColor='#666'
-            />
-          </TouchableOpacity>
+          </View>
         </View>
         <View className='flex-row gap-2'>
           <CartButton />
@@ -295,6 +323,70 @@ export default function Home() {
         onClose={handleCloseModal}
         onAddToCart={handleAddToCart}
       />
+
+      {/* Location Picker Modal */}
+      <Modal
+        visible={locationModalVisible}
+        transparent
+        animationType='slide'
+        onRequestClose={() => setLocationModalVisible(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0,0,0,0.3)',
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: 'white',
+              borderRadius: 16,
+              padding: 24,
+              minWidth: 250,
+            }}
+          >
+            <Text
+              style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 16 }}
+            >
+              Select Location
+            </Text>
+            {locations.map((loc) => (
+              <TouchableOpacity
+                key={loc}
+                style={{ paddingVertical: 10 }}
+                onPress={async () => {
+                  setLocation(loc)
+                  setLocationModalVisible(false)
+                  try {
+                    await updateLocation(loc)
+                  } catch (error) {
+                    console.error('Failed to save location:', error)
+                  }
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: location === loc ? '#FF6B35' : '#333',
+                  }}
+                >
+                  {loc}
+                </Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              style={{ marginTop: 16, alignSelf: 'flex-end' }}
+              onPress={() => setLocationModalVisible(false)}
+            >
+              <Text style={{ color: '#FF6B35', fontWeight: 'bold' }}>
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   )
 }

@@ -1,25 +1,168 @@
 import { images } from '@/constants'
-import React from 'react'
-import { Image, Text, TouchableOpacity, View } from 'react-native'
+import { useAuth } from '@/contexts/AuthContext'
+import * as ImagePicker from 'expo-image-picker'
+import { router } from 'expo-router'
+import React, { useEffect, useState } from 'react'
+import { Alert, Image, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Profile() {
+  const { user, signOut, deleteAccount } = useAuth()
+  const [profileImage, setProfileImage] = useState<string | null>(
+    user?.profileImage || null
+  )
+
+  useEffect(() => {
+    if (user?.profileImage) {
+      setProfileImage(user.profileImage)
+    }
+  }, [user?.profileImage])
+
   const profileOptions = [
-    { id: 1, title: 'Personal Info', icon: images.person },
-    { id: 2, title: 'Order History', icon: images.clock },
-    { id: 3, title: 'Payment Methods', icon: images.dollar },
-    { id: 4, title: 'Location', icon: images.location },
-    { id: 5, title: 'Logout', icon: images.logout },
+    {
+      id: 1,
+      title: 'Personal Info',
+      icon: images.person,
+      action: () => router.push('/profile/personal-info'),
+    },
+    { id: 2, title: 'Order History', icon: images.clock, action: () => {} },
+    {
+      id: 3,
+      title: 'Payment Methods',
+      icon: images.dollar,
+      action: () => router.push('/profile/payment-methods'),
+    },
+    {
+      id: 4,
+      title: 'Location',
+      icon: images.location,
+      action: () => router.push('/profile/location'),
+    },
+    {
+      id: 5,
+      title: 'Delete Account',
+      icon: images.trash,
+      action: () => handleDeleteAccount(),
+    },
+    {
+      id: 6,
+      title: 'Logout',
+      icon: images.logout,
+      action: () => handleLogout(),
+    },
   ]
+
+  const handleAvatarChange = async () => {
+    try {
+      // Request permissions
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync()
+
+      if (permissionResult.granted === false) {
+        Alert.alert(
+          'Permission required',
+          'Permission to access camera roll is required!'
+        )
+        return
+      }
+
+      // Show options
+      Alert.alert('Change Profile Picture', 'Choose an option', [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Take Photo',
+          onPress: async () => {
+            const result = await ImagePicker.launchCameraAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0.8,
+            })
+
+            if (!result.canceled) {
+              setProfileImage(result.assets[0].uri)
+              // In a real app, you would upload this to your server
+              Alert.alert('Success', 'Profile picture updated!')
+            }
+          },
+        },
+        {
+          text: 'Choose from Gallery',
+          onPress: async () => {
+            const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0.8,
+            })
+
+            if (!result.canceled) {
+              setProfileImage(result.assets[0].uri)
+              // In a real app, you would upload this to your server
+              Alert.alert('Success', 'Profile picture updated!')
+            }
+          },
+        },
+      ])
+    } catch {
+      Alert.alert('Error', 'Failed to change profile picture')
+    }
+  }
+
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: () => {
+          signOut()
+          router.replace('/(auth)/sign-in')
+        },
+      },
+    ])
+  }
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteAccount()
+              Alert.alert(
+                'Account Deleted',
+                'Your account has been successfully deleted.'
+              )
+              router.replace('/(auth)/sign-in')
+            } catch (error) {
+              Alert.alert(
+                'Error',
+                'Failed to delete account. Please try again.'
+              )
+            }
+          },
+        },
+      ]
+    )
+  }
 
   return (
     <SafeAreaView className='flex-1'>
       <View className='px-5 pt-5'>
         {/* Profile Header */}
         <View className='items-center mb-8'>
-          <View className='profile-avatar mb-4'>
+          <TouchableOpacity
+            onPress={handleAvatarChange}
+            className='profile-avatar mb-4'
+          >
             <Image
-              source={images.avatar}
+              source={profileImage ? { uri: profileImage } : images.avatar}
               className='size-full rounded-full'
               resizeMode='cover'
             />
@@ -31,10 +174,12 @@ export default function Profile() {
                 tintColor='white'
               />
             </TouchableOpacity>
-          </View>
-          <Text className='h3-bold text-dark-100 mb-1'>John Doe</Text>
+          </TouchableOpacity>
+          <Text className='h3-bold text-dark-100 mb-1'>
+            {user?.username || 'User'}
+          </Text>
           <Text className='paragraph-medium text-gray-500'>
-            john.doe@example.com
+            {user?.email || 'user@example.com'}
           </Text>
         </View>
 
@@ -50,6 +195,7 @@ export default function Profile() {
                 paddingVertical: 16,
                 paddingHorizontal: 20,
               }}
+              onPress={option.action}
             >
               <View className='profile-field__icon'>
                 <Image

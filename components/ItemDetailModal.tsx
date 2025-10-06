@@ -114,9 +114,13 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
           />
         </TouchableOpacity>
 
-        <ScrollView className='flex-1' showsVerticalScrollIndicator={false}>
+        <ScrollView
+          className='flex-1'
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 180 }}
+        >
           {/* Hero Image Gallery */}
-          <View className='relative bg-white'>
+          <View className='relative bg-white mb-4'>
             <Image
               source={item.images[currentImageIndex]}
               className='w-full h-96'
@@ -134,7 +138,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
 
             {/* Image Indicators */}
             {item.images.length > 1 && (
-              <View className='absolute bottom-6 left-0 right-0 flex-row justify-center space-x-2'>
+              <View className='absolute bottom-6 left-0 right-0 flex-row justify-center gap-2'>
                 {item.images.map((_, index) => (
                   <TouchableOpacity
                     key={index}
@@ -154,16 +158,16 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
           </View>
 
           {/* Content Container */}
-          <View className='px-5 pt-2 pb-32'>
+          <View className='px-6'>
             {/* Title and Rating Card */}
-            <View className='bg-white rounded-3xl p-5 mb-4 shadow-sm'>
-              <View className='flex-row items-start justify-between mb-3'>
+            <View className='bg-white rounded-3xl p-6 mb-5 shadow-sm'>
+              <View className='flex-row items-start justify-between mb-4'>
                 <View className='flex-1 pr-4'>
                   <Text className='text-2xl font-quicksand-bold text-dark-100 leading-tight'>
                     {item.title}
                   </Text>
                 </View>
-                <View className='bg-amber-50 px-3 py-2 rounded-full flex-row items-center space-x-1'>
+                <View className='bg-amber-50 px-3 py-2 rounded-full flex-row items-center gap-1'>
                   <Image
                     source={images.star}
                     className='size-4'
@@ -176,7 +180,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
               </View>
 
               {/* Price Section */}
-              <View className='flex-row items-center space-x-3 mb-3'>
+              <View className='flex-row items-center gap-3 mb-4'>
                 <Text className='text-3xl font-quicksand-bold text-primary'>
                   ${item.price.toFixed(2)}
                 </Text>
@@ -188,7 +192,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
               </View>
 
               {/* Calories Badge */}
-              <View className='flex-row items-center space-x-2 bg-gray-50 px-4 py-2 rounded-full self-start'>
+              <View className='flex-row items-center gap-2 bg-gray-50 px-4 py-2 rounded-full self-start'>
                 <Image
                   source={images.clock}
                   className='size-4'
@@ -201,8 +205,8 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
             </View>
 
             {/* Description Card */}
-            <View className='bg-white rounded-3xl p-5 mb-4 shadow-sm'>
-              <Text className='text-sm font-quicksand-bold text-dark-100 mb-2 uppercase tracking-wide'>
+            <View className='bg-white rounded-3xl p-6 mb-5 shadow-sm'>
+              <Text className='text-sm font-quicksand-bold text-dark-100 mb-3 uppercase tracking-wide'>
                 About This Dish
               </Text>
               <Text className='text-base text-gray-700 leading-relaxed font-quicksand-regular'>
@@ -212,34 +216,43 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
 
             {/* Toppings Section */}
             {item.toppings.length > 0 && (
-              <View className='mb-4'>
-                <View className='flex-row items-center justify-between mb-3'>
+              <View className='mb-5'>
+                <View className='flex-row items-center justify-between mb-4 px-1'>
                   <Text className='text-xl font-quicksand-bold text-dark-100'>
                     ✨ Add Toppings
                   </Text>
                   {selectedToppings.length > 0 && (
-                    <View className='bg-primary/10 px-3 py-1 rounded-full'>
+                    <View className='bg-primary/10 px-3 py-1.5 rounded-full'>
                       <Text className='text-primary font-quicksand-bold text-xs'>
                         {selectedToppings.length} selected
                       </Text>
                     </View>
                   )}
                 </View>
-                <View className='space-y-2'>
-                  {item.toppings.map((topping) => {
+                <View className='gap-3'>
+                  {item.toppings.map((topping, index) => {
                     const isSelected = selectedToppings.includes(topping.name)
                     return (
                       <TouchableOpacity
                         key={topping.name}
                         onPress={() => toggleTopping(topping.name)}
-                        className={`flex-row items-center justify-between p-4 rounded-2xl transition-all shadow-sm ${
+                        className={`flex-row items-center justify-between p-4 rounded-2xl transition-all ${
                           isSelected
-                            ? 'bg-primary border-2 border-primary'
-                            : 'bg-white border-2 border-gray-100'
+                            ? 'bg-primary border-2 border-primary shadow-md'
+                            : 'bg-white shadow-sm'
                         }`}
                         activeOpacity={0.7}
+                        style={{
+                          shadowColor: isSelected
+                            ? item.color || '#FF6B6B'
+                            : '#000',
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: isSelected ? 0.2 : 0.05,
+                          shadowRadius: isSelected ? 6 : 3,
+                          elevation: isSelected ? 4 : 2,
+                        }}
                       >
-                        <View className='flex-row items-center space-x-3'>
+                        <View className='flex-row items-center gap-3 flex-1'>
                           <View
                             className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
                               isSelected
@@ -252,7 +265,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
                             )}
                           </View>
                           <Text
-                            className={`font-quicksand-semibold text-base ${
+                            className={`font-quicksand-semibold text-base flex-1 ${
                               isSelected ? 'text-white' : 'text-gray-800'
                             }`}
                           >
@@ -260,7 +273,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
                           </Text>
                         </View>
                         <Text
-                          className={`font-quicksand-bold text-base ${
+                          className={`font-quicksand-bold text-base ml-2 ${
                             isSelected ? 'text-white' : 'text-primary'
                           }`}
                         >
@@ -275,34 +288,43 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
 
             {/* Sides Section */}
             {item.sides.length > 0 && (
-              <View className='mb-4'>
-                <View className='flex-row items-center justify-between mb-3'>
+              <View className='mb-6'>
+                <View className='flex-row items-center justify-between mb-4 px-1'>
                   <Text className='text-xl font-quicksand-bold text-dark-100'>
                     🍟 Choose Sides
                   </Text>
                   {selectedSides.length > 0 && (
-                    <View className='bg-primary/10 px-3 py-1 rounded-full'>
+                    <View className='bg-primary/10 px-3 py-1.5 rounded-full'>
                       <Text className='text-primary font-quicksand-bold text-xs'>
                         {selectedSides.length} selected
                       </Text>
                     </View>
                   )}
                 </View>
-                <View className='space-y-2'>
-                  {item.sides.map((side) => {
+                <View className='gap-3'>
+                  {item.sides.map((side, index) => {
                     const isSelected = selectedSides.includes(side.name)
                     return (
                       <TouchableOpacity
                         key={side.name}
                         onPress={() => toggleSide(side.name)}
-                        className={`flex-row items-center justify-between p-4 rounded-2xl transition-all shadow-sm ${
+                        className={`flex-row items-center justify-between p-4 rounded-2xl transition-all ${
                           isSelected
-                            ? 'bg-primary border-2 border-primary'
-                            : 'bg-white border-2 border-gray-100'
+                            ? 'bg-primary border-2 border-primary shadow-md'
+                            : 'bg-white shadow-sm'
                         }`}
                         activeOpacity={0.7}
+                        style={{
+                          shadowColor: isSelected
+                            ? item.color || '#FF6B6B'
+                            : '#000',
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: isSelected ? 0.2 : 0.05,
+                          shadowRadius: isSelected ? 6 : 3,
+                          elevation: isSelected ? 4 : 2,
+                        }}
                       >
-                        <View className='flex-row items-center space-x-3'>
+                        <View className='flex-row items-center gap-3 flex-1'>
                           <View
                             className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
                               isSelected
@@ -315,7 +337,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
                             )}
                           </View>
                           <Text
-                            className={`font-quicksand-semibold text-base ${
+                            className={`font-quicksand-semibold text-base flex-1 ${
                               isSelected ? 'text-white' : 'text-gray-800'
                             }`}
                           >
@@ -323,7 +345,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
                           </Text>
                         </View>
                         <Text
-                          className={`font-quicksand-bold text-base ${
+                          className={`font-quicksand-bold text-base ml-2 ${
                             isSelected ? 'text-white' : 'text-primary'
                           }`}
                         >
@@ -340,7 +362,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
 
         {/* Floating Bottom Bar */}
         <View
-          className='absolute bottom-0 left-0 right-0 bg-white px-5 pt-4 pb-8 border-t border-gray-100'
+          className='absolute bottom-0 left-0 right-0 bg-white px-6 pt-5 pb-8'
           style={{
             shadowColor: '#000',
             shadowOffset: { width: 0, height: -4 },
