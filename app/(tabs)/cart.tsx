@@ -215,12 +215,12 @@ export default function Cart() {
         data={cartItems}
         renderItem={renderCartItem}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ padding: 20 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       />
 
       {/* Checkout Section */}
-      <View className='bg-white p-5'>
+      <View className='bg-white p-5 mb-24'>
         <View className='flex-row justify-between items-center mb-4'>
           <Text className='text-lg font-quicksand-bold text-dark-100'>
             Total

@@ -3,7 +3,8 @@ import CustomInput from '@/components/CustomInput'
 import { useAuth } from '@/contexts/AuthContext'
 import { router } from 'expo-router'
 import React, { useState } from 'react'
-import { Alert, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const SignUp = () => {
   const { signUp } = useAuth()
@@ -52,25 +53,35 @@ const SignUp = () => {
   }
 
   return (
-    <View className='flex-1 bg-transparent'>
-      {/* Rounded Form Container - Blends with background at top */}
-      <View className='flex-1 bg-transparent rounded-t-[50px] px-6 pt-6 pb-8 -mt-8'>
-        {/* Header Section - Now inside the form container */}
-        <View className='mb-6 bg-transparent'>
-          <View className='mb-1'>
+    <SafeAreaView className='flex-1 bg-white' edges={['bottom']}>
+      \n{' '}
+      <ScrollView
+        className='flex-1'
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingHorizontal: 24,
+          paddingTop: 20,
+          paddingBottom: 40,
+        }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps='handled'
+      >
+        {/* Header Section */}
+        <View className='mb-6'>
+          <View className='mb-2'>
             <Text className='text-3xl font-quicksand-bold leading-tight'>
               <Text className='text-dark-100'>Create </Text>
               <Text className='text-primary'>Account ✨</Text>
             </Text>
           </View>
-          <Text className='text-sm font-quicksand-medium text-gray-500'>
+          <Text className='text-base font-quicksand-medium text-gray-500'>
             Join us and start your delicious journey
           </Text>
         </View>
 
-        {/* Sign Up Form - Direct in transparent container */}
-        <View className='w-full'>
-          <View className='mb-3'>
+        {/* Sign Up Form */}
+        <View className='w-full flex-1'>
+          <View className='mb-4'>
             <CustomInput
               label='Full Name'
               placeholder='Enter your full name'
@@ -79,7 +90,7 @@ const SignUp = () => {
             />
           </View>
 
-          <View className='mb-3'>
+          <View className='mb-4'>
             <CustomInput
               label='Username'
               placeholder='Choose a username'
@@ -88,7 +99,7 @@ const SignUp = () => {
             />
           </View>
 
-          <View className='mb-3'>
+          <View className='mb-4'>
             <CustomInput
               label='Email Address'
               placeholder='your.email@example.com'
@@ -98,7 +109,7 @@ const SignUp = () => {
             />
           </View>
 
-          <View className='mb-3'>
+          <View className='mb-4'>
             <CustomInput
               label='Password'
               placeholder='Enter your password'
@@ -108,7 +119,7 @@ const SignUp = () => {
             />
           </View>
 
-          <View className='mb-2'>
+          <View className='mb-3'>
             <CustomInput
               label='Confirm Password'
               placeholder='Confirm your password'
@@ -121,7 +132,7 @@ const SignUp = () => {
           </View>
 
           {/* Terms and Conditions */}
-          <View className='mb-6 mt-2'>
+          <View className='mb-6 mt-1'>
             <Text className='text-xs text-gray-500 font-quicksand-regular leading-relaxed'>
               By creating an account, you agree to our{' '}
               <Text className='text-primary font-quicksand-medium'>
@@ -139,7 +150,7 @@ const SignUp = () => {
             title='Create Account'
             onPress={handleSignUp}
             isLoading={isLoading}
-            buttonStyle='mb-4'
+            buttonStyle='mb-5'
           />
 
           {/* Sign In Link */}
@@ -154,8 +165,8 @@ const SignUp = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 

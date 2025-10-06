@@ -1,7 +1,8 @@
 import CustomAlert from '@/components/CustomAlert'
 import { images } from '@/constants'
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
+  Animated,
   Image,
   Modal,
   ScrollView,
@@ -46,6 +47,69 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
   const [selectedSides, setSelectedSides] = useState<string[]>([])
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [showSuccessAlert, setShowSuccessAlert] = useState(false)
+  const fadeAnim = useRef(new Animated.Value(1)).current
+
+  // Animate image transitions
+  const animateImageTransition = useCallback(() => {
+    // Fade out
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      // Change image in the middle of animation
+      setCurrentImageIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % (item?.images.length || 1)
+        return nextIndex
+      })
+      // Fade in
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start()
+    })
+  }, [fadeAnim, item?.images.length])
+
+  // Auto-scroll images every 3 seconds
+  useEffect(() => {
+    if (!item || item.images.length <= 1 || !visible) return
+
+    const interval = setInterval(() => {
+      animateImageTransition()
+    }, 3000) // Change image every 3 seconds
+
+    return () => clearInterval(interval)
+  }, [item, visible, item?.images.length, animateImageTransition])
+
+  // Reset image index when modal opens with new item
+  useEffect(() => {
+    if (visible) {
+      setCurrentImageIndex(0)
+      fadeAnim.setValue(1) // Reset animation
+    }
+  }, [visible, item?.id, fadeAnim])
+
+  // Handle manual image selection with animation
+  const handleImageSelect = useCallback(
+    (index: number) => {
+      if (index === currentImageIndex) return
+
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        setCurrentImageIndex(index)
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }).start()
+      })
+    },
+    [currentImageIndex, fadeAnim]
+  )
 
   if (!item) return null
 
@@ -79,8 +143,18 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
   }
 
   const handleAddToCart = () => {
-    onAddToCart(item, selectedToppings, selectedSides)
+    // Show alert first, don't call onAddToCart until alert is dismissed
     setShowSuccessAlert(true)
+  }
+
+  const handleAlertConfirm = () => {
+    // Add to cart when user confirms the alert
+    onAddToCart(item, selectedToppings, selectedSides)
+    setShowSuccessAlert(false)
+    setSelectedToppings([])
+    setSelectedSides([])
+    setCurrentImageIndex(0)
+    onClose()
   }
 
   const discount = Math.round(
@@ -126,16 +200,27 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
           contentContainerStyle={{ paddingBottom: 180 }}
         >
           {/* Hero Image Gallery */}
-          <View className='relative bg-white mb-4'>
-            <Image
+          <View className='relative bg-black mb-4'>
+            <Animated.Image
               source={item.images[currentImageIndex]}
               className='w-full h-96'
               resizeMode='cover'
+              style={{
+                opacity: fadeAnim,
+              }}
+            />
+
+            {/* Dark Overlay for better content visibility */}
+            <View
+              className='absolute inset-0'
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+              }}
             />
 
             {/* Discount Badge */}
             {discount > 0 && (
-              <View className='absolute top-12 right-5 bg-red-500 px-4 py-2 rounded-full shadow-lg'>
+              <View className='absolute top-12 right-5 bg-red-500 px-4 py-2 rounded-full shadow-lg z-10'>
                 <Text className='text-white font-quicksand-bold text-sm'>
                   {discount}% OFF
                 </Text>
@@ -144,23 +229,36 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
 
             {/* Image Indicators */}
             {item.images.length > 1 && (
-              <View className='absolute bottom-6 left-0 right-0 flex-row justify-center gap-2'>
-                {item.images.map((_, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => setCurrentImageIndex(index)}
-                    className={`h-2 rounded-full transition-all ${
-                      index === currentImageIndex
-                        ? 'w-8 bg-white'
-                        : 'w-2 bg-white/50'
-                    }`}
-                  />
-                ))}
+              <View className='absolute bottom-6 left-0 right-0 flex-row justify-center gap-2 z-10'>
+                {item.images.map((_, index) => {
+                  const isActive = index === currentImageIndex
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => handleImageSelect(index)}
+                      activeOpacity={0.7}
+                    >
+                      <Animated.View
+                        className={`h-2 rounded-full ${
+                          isActive ? 'bg-white shadow-lg' : 'bg-white/60'
+                        }`}
+                        style={{
+                          width: isActive ? 32 : 8,
+                          shadowColor: '#000',
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 4,
+                          elevation: 3,
+                        }}
+                      />
+                    </TouchableOpacity>
+                  )
+                })}
               </View>
             )}
 
             {/* Curved Bottom Edge */}
-            <View className='absolute -bottom-6 left-0 right-0 h-8 bg-gray-50 rounded-t-[32px]' />
+            <View className='absolute -bottom-6 left-0 right-0 h-8 bg-gray-50 rounded-t-[32px] z-10' />
           </View>
 
           {/* Content Container */}
@@ -420,13 +518,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
         message={`${item.title} has been added to your cart successfully.`}
         type='success'
         confirmText='Continue Shopping'
-        onConfirm={() => {
-          setShowSuccessAlert(false)
-          setSelectedToppings([])
-          setSelectedSides([])
-          setCurrentImageIndex(0)
-          onClose()
-        }}
+        onConfirm={handleAlertConfirm}
         showCancel={false}
       />
     </Modal>

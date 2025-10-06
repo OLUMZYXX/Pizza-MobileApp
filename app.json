@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Food-Saver",
+    "name": "TastyBite",
     "slug": "mobile-food-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,6 +8,11 @@
     "scheme": "fastfood",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF6B35"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.yourcompany.mobilefoodapp",

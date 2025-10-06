@@ -203,7 +203,7 @@ export default function Profile() {
       <ScrollView
         className='flex-1'
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 10 }}
+        contentContainerStyle={{ paddingBottom: 120 }}
       >
         <View className='px-5 pt-5'>
           {/* Profile Header */}

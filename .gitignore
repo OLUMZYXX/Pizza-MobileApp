@@ -6,6 +6,11 @@ yarn-error.log*
 .pnp/
 .pnp.js
 global.css
+
+# Documentation
+README.md
+*.md
+
 # Expo / React Native
 .expo/
 .expo-shared/

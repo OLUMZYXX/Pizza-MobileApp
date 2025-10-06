@@ -6,11 +6,9 @@ import {
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   StatusBar,
   View,
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function AuthLayout() {
   const pathname = usePathname()
@@ -28,17 +26,12 @@ export default function AuthLayout() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className='flex-1'
       >
-        <ScrollView
-          className='flex-1'
-          keyboardShouldPersistTaps='handled'
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ flexGrow: 1 }}
-        >
-          {/* Background Image Section - Full screen from top */}
+        <View className='flex-1'>
+          {/* Background Image Section - Fixed height */}
           <View
             className='w-full relative'
             style={{
-              height: Dimensions.get('screen').height / 3,
+              height: Dimensions.get('screen').height * 0.35,
               marginTop: -(StatusBar.currentHeight || 0),
             }}
           >
@@ -47,24 +40,13 @@ export default function AuthLayout() {
               className='size-full'
               resizeMode='cover'
             />
-            {/* Logo removed as requested */}
           </View>
 
-          {/* Auth Content Section */}
-          <SafeAreaView className='bg-transparent'>
-            <View className='flex-1 px-5 pt-8 bg-transparent'>
-              <Slot />
-            </View>
-          </SafeAreaView>
-          {/* <CustomInput
-            placeholder='Enter your email'
-            value=''
-            onChangeText={() => {}}
-            label='Email'
-            keyboardType='email-address'
-          /> */}
-          {/* <CustomButton /> */}
-        </ScrollView>
+          {/* Auth Content Section - White rounded container */}
+          <View className='flex-1 bg-white rounded-t-[40px] -mt-8'>
+            <Slot />
+          </View>
+        </View>
       </KeyboardAvoidingView>
     </View>
   )

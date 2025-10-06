@@ -1,7 +1,8 @@
 import { images } from '@/constants'
+import { BlurView } from 'expo-blur'
 import { Tabs } from 'expo-router'
 import React from 'react'
-import { Image } from 'react-native'
+import { Image, Platform, StyleSheet, View } from 'react-native'
 
 export default function TabsLayout() {
   return (
@@ -11,7 +12,8 @@ export default function TabsLayout() {
         tabBarActiveTintColor: '#FF6B35',
         tabBarInactiveTintColor: '#9CA3AF',
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
+          position: 'absolute',
+          backgroundColor: 'transparent',
           borderTopWidth: 0,
           borderTopColor: 'transparent',
           height: 80,
@@ -21,15 +23,36 @@ export default function TabsLayout() {
           marginBottom: 20,
           borderRadius: 25,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
-          elevation: 10,
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.2,
+          shadowRadius: 16,
+          elevation: 20,
+          overflow: 'hidden',
         },
+        tabBarBackground: () => (
+          <View style={StyleSheet.absoluteFill}>
+            <BlurView
+              intensity={Platform.OS === 'android' ? 100 : 80}
+              tint='light'
+              style={StyleSheet.absoluteFill}
+            />
+            <View
+              style={{
+                ...StyleSheet.absoluteFillObject,
+                backgroundColor:
+                  Platform.OS === 'android'
+                    ? 'rgba(255, 255, 255, 0.5)'
+                    : 'rgba(255, 255, 255, 0.3)',
+                borderRadius: 25,
+              }}
+            />
+          </View>
+        ),
         tabBarLabelStyle: {
           fontFamily: 'Quicksand-Medium',
           fontSize: 12,
           marginTop: 5,
+          fontWeight: Platform.OS === 'android' ? '600' : '500',
         },
       }}
     >
