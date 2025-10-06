@@ -8,6 +8,7 @@ import {
   Image,
   Modal,
   Pressable,
+  RefreshControl,
   Text,
   TouchableOpacity,
   View,
@@ -27,6 +28,17 @@ export default function Home() {
     (typeof offers)[number] | null
   >(null)
   const [modalVisible, setModalVisible] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
+
+  // Handle pull to refresh
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true)
+    // Simulate a refresh - you can add actual data fetching here
+    setTimeout(() => {
+      setCurrentTime(new Date())
+      setRefreshing(false)
+    }, 1500)
+  }, [])
 
   // Sync location from user data
   useEffect(() => {
@@ -157,6 +169,16 @@ export default function Home() {
         data={offers}
         keyboardShouldPersistTaps='handled'
         keyboardDismissMode='none'
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#FF6B35']} // Android
+            tintColor='#FF6B35' // iOS
+            title='Pull to refresh' // iOS
+            titleColor='#666' // iOS
+          />
+        }
         renderItem={({ item, index }) => {
           // Cards 2 and 4 (index 1 and 3) will have image on left
           const imageOnLeft = index === 1 || index === 3

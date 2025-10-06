@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import 'react-native-reanimated'
 import { AuthProvider } from '../contexts/AuthContext'
 import { CartProvider } from '../contexts/CartContext'
+import { OrderProvider } from '../contexts/OrderContext'
 import '../global.css'
 
 export default function RootLayout() {
@@ -27,10 +28,12 @@ export default function RootLayout() {
   }
 
   return (
-    <CartProvider>
-      <AuthProvider>
-        <Stack screenOptions={{ headerShown: false }} />
-      </AuthProvider>
-    </CartProvider>
+    <OrderProvider>
+      <CartProvider>
+        <AuthProvider>
+          <Stack screenOptions={{ headerShown: false }} />
+        </AuthProvider>
+      </CartProvider>
+    </OrderProvider>
   )
 }

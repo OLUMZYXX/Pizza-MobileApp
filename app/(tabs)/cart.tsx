@@ -1,6 +1,7 @@
 import CustomAlert from '@/components/CustomAlert'
 import { images } from '@/constants'
 import { useCart } from '@/contexts/CartContext'
+import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -75,19 +76,7 @@ export default function Cart() {
   }
 
   const handleCheckout = () => {
-    setAlertConfig({
-      visible: true,
-      title: 'Checkout',
-      message: 'Checkout functionality coming soon!',
-      type: 'info',
-      confirmText: 'OK',
-      cancelText: 'Cancel',
-      showCancel: false,
-      onConfirm: () => {
-        setAlertConfig({ ...alertConfig, visible: false })
-      },
-      onCancel: () => {},
-    })
+    router.push('/checkout')
   }
 
   const renderCartItem = ({ item }: { item: any }) => (

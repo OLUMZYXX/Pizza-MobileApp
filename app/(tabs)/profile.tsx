@@ -44,7 +44,12 @@ export default function Profile() {
       icon: images.person,
       action: () => router.push('/profile/personal-info'),
     },
-    { id: 2, title: 'Order History', icon: images.clock, action: () => {} },
+    {
+      id: 2,
+      title: 'Order History',
+      icon: images.clock,
+      action: () => router.push('/profile/order-history'),
+    },
     {
       id: 3,
       title: 'Payment Methods',
