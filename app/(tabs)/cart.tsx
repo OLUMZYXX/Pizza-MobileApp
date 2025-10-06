@@ -1,14 +1,8 @@
+import CustomAlert from '@/components/CustomAlert'
 import { images } from '@/constants'
 import { useCart } from '@/contexts/CartContext'
-import React, { useEffect } from 'react'
-import {
-  Alert,
-  FlatList,
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Cart() {
@@ -20,6 +14,18 @@ export default function Cart() {
     isLoading,
   } = useCart()
 
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'warning' as 'success' | 'error' | 'warning' | 'info',
+    confirmText: 'OK',
+    cancelText: 'Cancel',
+    showCancel: false,
+    onConfirm: () => {},
+    onCancel: () => {},
+  })
+
   useEffect(() => {
     console.log('Cart items updated:', cartItems)
   }, [cartItems])
@@ -28,28 +34,60 @@ export default function Cart() {
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity <= 0) {
-      Alert.alert(
-        'Remove Item',
-        'Are you sure you want to remove this item from your cart?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Remove', onPress: () => removeFromCart(id) },
-        ]
-      )
+      setAlertConfig({
+        visible: true,
+        title: 'Remove Item',
+        message: 'Are you sure you want to remove this item from your cart?',
+        type: 'warning',
+        confirmText: 'Remove',
+        cancelText: 'Cancel',
+        showCancel: true,
+        onConfirm: () => {
+          removeFromCart(id)
+          setAlertConfig({ ...alertConfig, visible: false })
+        },
+        onCancel: () => {
+          setAlertConfig({ ...alertConfig, visible: false })
+        },
+      })
     } else {
       updateQuantity(id, newQuantity)
     }
   }
 
   const handleRemoveItem = (id: string) => {
-    Alert.alert(
-      'Remove Item',
-      'Are you sure you want to remove this item from your cart?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Remove', onPress: () => removeFromCart(id) },
-      ]
-    )
+    setAlertConfig({
+      visible: true,
+      title: 'Remove Item',
+      message: 'Are you sure you want to remove this item from your cart?',
+      type: 'warning',
+      confirmText: 'Remove',
+      cancelText: 'Cancel',
+      showCancel: true,
+      onConfirm: () => {
+        removeFromCart(id)
+        setAlertConfig({ ...alertConfig, visible: false })
+      },
+      onCancel: () => {
+        setAlertConfig({ ...alertConfig, visible: false })
+      },
+    })
+  }
+
+  const handleCheckout = () => {
+    setAlertConfig({
+      visible: true,
+      title: 'Checkout',
+      message: 'Checkout functionality coming soon!',
+      type: 'info',
+      confirmText: 'OK',
+      cancelText: 'Cancel',
+      showCancel: false,
+      onConfirm: () => {
+        setAlertConfig({ ...alertConfig, visible: false })
+      },
+      onCancel: () => {},
+    })
   }
 
   const renderCartItem = ({ item }: { item: any }) => (
@@ -193,15 +231,25 @@ export default function Cart() {
         </View>
         <TouchableOpacity
           className='bg-primary py-4 rounded-full items-center'
-          onPress={() =>
-            Alert.alert('Checkout', 'Checkout functionality coming soon!')
-          }
+          onPress={handleCheckout}
         >
           <Text className='text-white font-quicksand-bold text-lg'>
             Proceed to Checkout
           </Text>
         </TouchableOpacity>
       </View>
+
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        confirmText={alertConfig.confirmText}
+        cancelText={alertConfig.cancelText}
+        showCancel={alertConfig.showCancel}
+        onConfirm={alertConfig.onConfirm}
+        onCancel={alertConfig.onCancel}
+      />
     </SafeAreaView>
   )
 }

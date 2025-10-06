@@ -1,7 +1,7 @@
+import CustomAlert from '@/components/CustomAlert'
 import { images } from '@/constants'
 import React, { useState } from 'react'
 import {
-  Alert,
   Image,
   Modal,
   ScrollView,
@@ -45,6 +45,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
   const [selectedToppings, setSelectedToppings] = useState<string[]>([])
   const [selectedSides, setSelectedSides] = useState<string[]>([])
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false)
 
   if (!item) return null
 
@@ -79,25 +80,30 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
 
   const handleAddToCart = () => {
     onAddToCart(item, selectedToppings, selectedSides)
-    Alert.alert('Success', `${item.title} added to cart!`)
-    onClose()
+    setShowSuccessAlert(true)
   }
 
   const discount = Math.round(
     ((item.originalPrice - item.price) / item.originalPrice) * 100
   )
 
+  const handleClose = () => {
+    if (!showSuccessAlert) {
+      onClose()
+    }
+  }
+
   return (
     <Modal
       visible={visible}
       animationType='slide'
       presentationStyle='pageSheet'
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
     >
       <View className='flex-1 bg-gray-50'>
         {/* Floating Close Button */}
         <TouchableOpacity
-          onPress={onClose}
+          onPress={handleClose}
           className='absolute top-12 left-5 z-50 bg-white/95 backdrop-blur-sm rounded-full p-3 shadow-lg'
           style={{
             shadowColor: '#000',
@@ -407,6 +413,22 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
           </TouchableOpacity>
         </View>
       </View>
+
+      <CustomAlert
+        visible={showSuccessAlert}
+        title='Added to Cart!'
+        message={`${item.title} has been added to your cart successfully.`}
+        type='success'
+        confirmText='Continue Shopping'
+        onConfirm={() => {
+          setShowSuccessAlert(false)
+          setSelectedToppings([])
+          setSelectedSides([])
+          setCurrentImageIndex(0)
+          onClose()
+        }}
+        showCancel={false}
+      />
     </Modal>
   )
 }

@@ -1,9 +1,17 @@
+import CustomAlert from '@/components/CustomAlert'
 import { images } from '@/constants'
 import { useAuth } from '@/contexts/AuthContext'
 import * as ImagePicker from 'expo-image-picker'
 import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { Alert, Image, Text, TouchableOpacity, View } from 'react-native'
+import {
+  Alert,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Profile() {
@@ -11,6 +19,17 @@ export default function Profile() {
   const [profileImage, setProfileImage] = useState<string | null>(
     user?.profileImage || null
   )
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'info' as 'success' | 'error' | 'warning' | 'info',
+    confirmText: 'OK',
+    cancelText: 'Cancel',
+    showCancel: false,
+    onConfirm: () => {},
+    onCancel: () => {},
+  })
 
   useEffect(() => {
     if (user?.profileImage) {
@@ -110,116 +129,161 @@ export default function Profile() {
   }
 
   const handleLogout = () => {
-    Alert.alert('Logout', 'Are you sure you want to logout?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Logout',
-        style: 'destructive',
-        onPress: () => {
-          signOut()
-          router.replace('/(auth)/sign-in')
-        },
+    setAlertConfig({
+      visible: true,
+      title: 'Logout',
+      message: 'Are you sure you want to logout?',
+      type: 'warning',
+      confirmText: 'Logout',
+      cancelText: 'Cancel',
+      showCancel: true,
+      onConfirm: () => {
+        setAlertConfig({ ...alertConfig, visible: false })
+        signOut()
+        router.replace('/(auth)/sign-in')
       },
-    ])
+      onCancel: () => {
+        setAlertConfig({ ...alertConfig, visible: false })
+      },
+    })
   }
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      'Delete Account',
-      'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteAccount()
-              Alert.alert(
-                'Account Deleted',
-                'Your account has been successfully deleted.'
-              )
+    setAlertConfig({
+      visible: true,
+      title: 'Delete Account',
+      message:
+        'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
+      type: 'error',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      showCancel: true,
+      onConfirm: async () => {
+        setAlertConfig({ ...alertConfig, visible: false })
+        try {
+          await deleteAccount()
+          setAlertConfig({
+            visible: true,
+            title: 'Account Deleted',
+            message: 'Your account has been successfully deleted.',
+            type: 'success',
+            confirmText: 'OK',
+            cancelText: 'Cancel',
+            showCancel: false,
+            onConfirm: () => {
+              setAlertConfig({ ...alertConfig, visible: false })
               router.replace('/(auth)/sign-in')
-            } catch (error) {
-              Alert.alert(
-                'Error',
-                'Failed to delete account. Please try again.'
-              )
-            }
-          },
-        },
-      ]
-    )
+            },
+            onCancel: () => {},
+          })
+        } catch {
+          setAlertConfig({
+            visible: true,
+            title: 'Error',
+            message: 'Failed to delete account. Please try again.',
+            type: 'error',
+            confirmText: 'OK',
+            cancelText: 'Cancel',
+            showCancel: false,
+            onConfirm: () => {
+              setAlertConfig({ ...alertConfig, visible: false })
+            },
+            onCancel: () => {},
+          })
+        }
+      },
+      onCancel: () => {
+        setAlertConfig({ ...alertConfig, visible: false })
+      },
+    })
   }
 
   return (
     <SafeAreaView className='flex-1'>
-      <View className='px-5 pt-5'>
-        {/* Profile Header */}
-        <View className='items-center mb-8'>
-          <TouchableOpacity
-            onPress={handleAvatarChange}
-            className='profile-avatar mb-4'
-          >
-            <Image
-              source={profileImage ? { uri: profileImage } : images.avatar}
-              className='size-full rounded-full'
-              resizeMode='cover'
-            />
-            <TouchableOpacity className='profile-edit'>
-              <Image
-                source={images.pencil}
-                className='size-3'
-                resizeMode='contain'
-                tintColor='white'
-              />
-            </TouchableOpacity>
-          </TouchableOpacity>
-          <Text className='h3-bold text-dark-100 mb-1'>
-            {user?.username || 'User'}
-          </Text>
-          <Text className='paragraph-medium text-gray-500'>
-            {user?.email || 'user@example.com'}
-          </Text>
-        </View>
-
-        {/* Profile Options */}
-        <View className='bg-white rounded-2xl'>
-          {profileOptions.map((option, index) => (
+      <ScrollView
+        className='flex-1'
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 10 }}
+      >
+        <View className='px-5 pt-5'>
+          {/* Profile Header */}
+          <View className='items-center mb-8'>
             <TouchableOpacity
-              key={option.id}
-              className='profile-field'
-              style={{
-                borderBottomWidth: index < profileOptions.length - 1 ? 1 : 0,
-                borderBottomColor: '#F3F4F6',
-                paddingVertical: 16,
-                paddingHorizontal: 20,
-              }}
-              onPress={option.action}
+              onPress={handleAvatarChange}
+              className='profile-avatar mb-4'
             >
-              <View className='profile-field__icon'>
-                <Image
-                  source={option.icon}
-                  className='size-5'
-                  resizeMode='contain'
-                  tintColor='#FF6B35'
-                />
-              </View>
-              <View className='flex-1'>
-                <Text className='paragraph-bold text-dark-100'>
-                  {option.title}
-                </Text>
-              </View>
               <Image
-                source={images.arrowRight}
-                className='size-4'
-                resizeMode='contain'
-                tintColor='#9CA3AF'
+                source={profileImage ? { uri: profileImage } : images.avatar}
+                className='size-full rounded-full'
+                resizeMode='cover'
               />
+              <TouchableOpacity className='profile-edit'>
+                <Image
+                  source={images.pencil}
+                  className='size-3'
+                  resizeMode='contain'
+                  tintColor='white'
+                />
+              </TouchableOpacity>
             </TouchableOpacity>
-          ))}
+            <Text className='h3-bold text-dark-100 mb-1'>
+              {user?.username || 'User'}
+            </Text>
+            <Text className='paragraph-medium text-gray-500'>
+              {user?.email || 'user@example.com'}
+            </Text>
+          </View>
+
+          {/* Profile Options */}
+          <View className='bg-white rounded-2xl mb-6'>
+            {profileOptions.map((option, index) => (
+              <TouchableOpacity
+                key={option.id}
+                className='profile-field'
+                style={{
+                  borderBottomWidth: index < profileOptions.length - 1 ? 1 : 0,
+                  borderBottomColor: '#F3F4F6',
+                  paddingVertical: 16,
+                  paddingHorizontal: 20,
+                }}
+                onPress={option.action}
+              >
+                <View className='profile-field__icon'>
+                  <Image
+                    source={option.icon}
+                    className='size-5'
+                    resizeMode='contain'
+                    tintColor='#FF6B35'
+                  />
+                </View>
+                <View className='flex-1'>
+                  <Text className='paragraph-bold text-dark-100'>
+                    {option.title}
+                  </Text>
+                </View>
+                <Image
+                  source={images.arrowRight}
+                  className='size-4'
+                  resizeMode='contain'
+                  tintColor='#9CA3AF'
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
-      </View>
+      </ScrollView>
+
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        confirmText={alertConfig.confirmText}
+        cancelText={alertConfig.cancelText}
+        showCancel={alertConfig.showCancel}
+        onConfirm={alertConfig.onConfirm}
+        onCancel={alertConfig.onCancel}
+      />
     </SafeAreaView>
   )
 }
