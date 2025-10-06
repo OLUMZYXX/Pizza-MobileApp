@@ -20,10 +20,12 @@ import user from '@/assets/icons/user.png'
 import avatar from '@/assets/images/avatar.png'
 import avocado from '@/assets/images/avocado.png'
 import bacon from '@/assets/images/bacon.png'
+import burgerImage from '@/assets/images/burger-image .jpg'
 import burgerOne from '@/assets/images/burger-one.png'
 import burgerTwo from '@/assets/images/burger-two.png'
 import buritto from '@/assets/images/buritto.png'
 import cheese from '@/assets/images/cheese.png'
+import chickenWings from '@/assets/images/chicken-wings.png'
 import coleslaw from '@/assets/images/coleslaw.png'
 import cucumber from '@/assets/images/cucumber.png'
 import emptyState from '@/assets/images/empty-state.png'
@@ -34,6 +36,7 @@ import mozarellaSticks from '@/assets/images/mozarella-sticks.png'
 import mushrooms from '@/assets/images/mushrooms.png'
 import onionRings from '@/assets/images/onion-rings.png'
 import onions from '@/assets/images/onions.png'
+import pasta from '@/assets/images/pasta.jpg'
 import pizzaOne from '@/assets/images/pizza-one.png'
 import salad from '@/assets/images/salad.png'
 import signup from '@/assets/images/signup.png'
@@ -76,7 +79,7 @@ export const offers = [
     calories: 850,
     description:
       'Juicy beef patty with fresh lettuce, tomatoes, onions, and our signature sauce. Perfect for summer days!',
-    images: [burgerOne, cheese, bacon, tomatoes],
+    images: [burgerOne],
     toppings: [
       { name: 'Extra Cheese', price: 1.5 },
       { name: 'Bacon', price: 2.0 },
@@ -92,7 +95,7 @@ export const offers = [
   {
     id: 2,
     title: 'BURGER BASH',
-    image: burgerTwo,
+    image: burgerImage,
     color: '#DF5A0C',
     price: 14.99,
     originalPrice: 18.99,
@@ -100,7 +103,7 @@ export const offers = [
     calories: 920,
     description:
       "Double beef patty with crispy bacon, melted cheese, and our special BBQ sauce. A burger lover's dream!",
-    images: [burgerTwo, bacon, cheese, onions],
+    images: [burgerImage],
     toppings: [
       { name: 'Extra Patty', price: 3.0 },
       { name: 'Bacon', price: 2.0 },
@@ -124,7 +127,7 @@ export const offers = [
     calories: 1200,
     description:
       'Large pepperoni pizza with extra cheese, mushrooms, and bell peppers. Perfect for sharing with friends!',
-    images: [pizzaOne, mushrooms, tomatoes, onions],
+    images: [pizzaOne],
     toppings: [
       { name: 'Extra Cheese', price: 2.0 },
       { name: 'Pepperoni', price: 2.5 },
@@ -148,7 +151,7 @@ export const offers = [
     calories: 780,
     description:
       'Grilled chicken burrito with rice, beans, cheese, and salsa. Wrapped in a warm flour tortilla!',
-    images: [buritto, cheese, tomatoes, onions],
+    images: [buritto],
     toppings: [
       { name: 'Extra Chicken', price: 2.5 },
       { name: 'Cheese', price: 1.0 },
@@ -164,7 +167,7 @@ export const offers = [
   {
     id: 5,
     title: 'CHICKEN WINGS',
-    image: fries,
+    image: chickenWings,
     color: '#FF6B35',
     price: 13.99,
     originalPrice: 16.99,
@@ -172,7 +175,7 @@ export const offers = [
     calories: 650,
     description:
       'Crispy chicken wings with your choice of sauce. Served with celery and ranch dressing!',
-    images: [fries, cheese, tomatoes],
+    images: [chickenWings],
     toppings: [
       { name: 'Extra Sauce', price: 1.0 },
       { name: 'Blue Cheese', price: 0.5 },
@@ -187,7 +190,7 @@ export const offers = [
   {
     id: 6,
     title: 'PASTA PRIMAVERA',
-    image: salad,
+    image: pasta,
     color: '#2E8B57',
     price: 15.99,
     originalPrice: 19.99,
@@ -195,7 +198,7 @@ export const offers = [
     calories: 720,
     description:
       'Fresh pasta with seasonal vegetables, garlic, olive oil, and parmesan cheese. A healthy Italian classic!',
-    images: [salad, tomatoes, mushrooms],
+    images: [pasta],
     toppings: [
       { name: 'Extra Parmesan', price: 1.5 },
       { name: 'Chicken', price: 3.0 },
@@ -281,8 +284,10 @@ export const images = {
   bacon,
   burgerOne,
   burgerTwo,
+  burgerImage,
   buritto,
   cheese,
+  chickenWings,
   coleslaw,
   cucumber,
   emptyState,
@@ -293,6 +298,7 @@ export const images = {
   mushrooms,
   onionRings,
   onions,
+  pasta,
   pizzaOne,
   salad,
   signup,

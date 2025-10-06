@@ -1,5 +1,9 @@
 import CustomAlert from '@/components/CustomAlert'
-import { images } from '@/constants'
+import {
+  sides as globalSides,
+  toppings as globalToppings,
+  images,
+} from '@/constants'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Animated,
@@ -336,6 +340,9 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
                 <View className='gap-3'>
                   {item.toppings.map((topping, index) => {
                     const isSelected = selectedToppings.includes(topping.name)
+                    const toppingWithImage = globalToppings.find(
+                      (t) => t.name === topping.name
+                    )
                     return (
                       <TouchableOpacity
                         key={topping.name}
@@ -368,6 +375,15 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
                               <View className='w-3 h-3 rounded-full bg-primary' />
                             )}
                           </View>
+                          {toppingWithImage?.image && (
+                            <View className='w-12 h-12 rounded-xl bg-gray-100 overflow-hidden'>
+                              <Image
+                                source={toppingWithImage.image}
+                                className='w-full h-full'
+                                resizeMode='cover'
+                              />
+                            </View>
+                          )}
                           <Text
                             className={`font-quicksand-semibold text-base flex-1 ${
                               isSelected ? 'text-white' : 'text-gray-800'
@@ -408,6 +424,9 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
                 <View className='gap-3'>
                   {item.sides.map((side, index) => {
                     const isSelected = selectedSides.includes(side.name)
+                    const sideWithImage = globalSides.find(
+                      (s) => s.name === side.name
+                    )
                     return (
                       <TouchableOpacity
                         key={side.name}
@@ -440,6 +459,15 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
                               <View className='w-3 h-3 rounded-full bg-primary' />
                             )}
                           </View>
+                          {sideWithImage?.image && (
+                            <View className='w-12 h-12 rounded-xl bg-gray-100 overflow-hidden'>
+                              <Image
+                                source={sideWithImage.image}
+                                className='w-full h-full'
+                                resizeMode='cover'
+                              />
+                            </View>
+                          )}
                           <Text
                             className={`font-quicksand-semibold text-base flex-1 ${
                               isSelected ? 'text-white' : 'text-gray-800'
